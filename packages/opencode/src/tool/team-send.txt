@@ -1,0 +1,11 @@
+Send a message to another child agent in the same team invocation.
+
+This tool is only available to agents spawned by the team tool. Use it to coordinate with sibling agents running in the same team.
+
+Parameters:
+- to: The ID of the target child agent (e.g., "task_0", "task_1")
+- message: The message content to send
+
+The target must be a valid child ID within the current team invocation. Messages are delivered asynchronously — the recipient must call team_recv to read them.
+
+Returns confirmation of delivery or an error if the target is invalid.

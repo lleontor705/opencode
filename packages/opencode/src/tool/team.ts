@@ -9,6 +9,7 @@ import { SessionPrompt } from "../session/prompt"
 import { defer } from "@/util/defer"
 import { Config } from "../config/config"
 import { Permission } from "@/permission"
+import { MailboxHub, TeamMailbox } from "./team-mailbox"
 
 const task = z.object({
   id: z.string().describe("Unique identifier for this task"),
@@ -110,12 +111,21 @@ export const TeamTool = Tool.define("team", async (ctx) => {
         resolvers.set(t.id, r)
       }
 
+      const mailbox = new MailboxHub()
+      for (const t of params.tasks) {
+        mailbox.registerChild(t.id)
+      }
+
       const cancellers: Array<() => void> = []
       function cancelAll() {
         for (const fn of cancellers) fn()
       }
       ctx.abort.addEventListener("abort", cancelAll)
-      using _ = defer(() => ctx.abort.removeEventListener("abort", cancelAll))
+      using _ = defer(() => {
+        ctx.abort.removeEventListener("abort", cancelAll)
+        TeamMailbox.unregisterAll(mailbox)
+        mailbox.destroy()
+      })
 
       const semaphore = params.concurrency
         ? createSemaphore(params.concurrency)
@@ -183,6 +193,7 @@ export const TeamTool = Tool.define("team", async (ctx) => {
         })
 
         states.set(t.id, { ...states.get(t.id)!, sessionID: session.id })
+        TeamMailbox.register(session.id, mailbox, t.id)
 
         function cancel() {
           SessionPrompt.cancel(session.id)

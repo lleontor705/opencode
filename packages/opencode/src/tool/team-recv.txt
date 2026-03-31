@@ -1,0 +1,9 @@
+Receive messages from other child agents in the same team invocation.
+
+This tool is only available to agents spawned by the team tool. Use it to read messages sent by sibling agents.
+
+Parameters:
+- from: Optional sender ID to filter messages (e.g., "task_0"). If omitted, returns all pending messages.
+- timeout_ms: Optional wait time in milliseconds (default: 5000, max: 30000). If no messages are available, waits up to this duration for new messages before returning empty.
+
+Returns an array of messages, each with sender ID, message body, and timestamp. Messages are consumed on read — calling team_recv again returns only new messages.

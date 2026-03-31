@@ -8,6 +8,8 @@ import { BatchTool } from "./batch"
 import { ReadTool } from "./read"
 import { TaskTool } from "./task"
 import { TeamTool } from "./team"
+import { TeamSendTool } from "./team-send"
+import { TeamRecvTool } from "./team-recv"
 import { TodoWriteTool } from "./todo"
 import { WebFetchTool } from "./webfetch"
 import { WriteTool } from "./write"
@@ -134,7 +136,7 @@ export namespace ToolRegistry {
           ApplyPatchTool,
           ...(Flag.OPENCODE_EXPERIMENTAL_LSP_TOOL ? [LspTool] : []),
           ...(cfg.experimental?.batch_tool === true ? [BatchTool] : []),
-          ...(cfg.experimental?.team_tool === true ? [TeamTool] : []),
+          ...(cfg.experimental?.team_tool === true ? [TeamTool, TeamSendTool, TeamRecvTool] : []),
           ...(Flag.OPENCODE_EXPERIMENTAL_PLAN_MODE && Flag.OPENCODE_CLIENT === "cli" ? [PlanExitTool] : []),
           ...custom,
         ]
